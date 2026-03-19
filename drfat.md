@@ -148,12 +148,12 @@ In this project:
 * training happens first, usually once or only when needed
 * inference happens later, every time the user submits input values
 
-</details>
+
 
 
 ## 3. The backend layer
 
-<details> 
+
 The backend layer is the central part of the application. It acts as a bridge between the frontend and the machine learning model.
 
 In this project, the file `backend.py` is responsible for:
