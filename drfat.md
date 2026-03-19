@@ -15,12 +15,13 @@ The user enters 8 numeric features in the Streamlit interface, the frontend send
 
 </details>
 
-<br/>
-<br/>
+
 
 
 # 1 - Project Goal
-
+<details>
+<summary>Section Summary</summary>
+<br/>
 The goal of this project is to show how a machine learning model can be:
 
 1. **trained locally** with TensorFlow,
@@ -34,7 +35,7 @@ This is a small but complete example of an AI-powered application with a clear s
 - **backend inference**
 - **frontend interaction**
 
----
+</details>
 
 # 2 - Global Architecture
 
