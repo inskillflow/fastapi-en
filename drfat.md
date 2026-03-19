@@ -31,11 +31,11 @@ This is a small but complete example of an AI-powered application with a clear s
 
 ```mermaid
 flowchart LR
-    A["User enters 8 features in Streamlit"] --> B["Frontend sends HTTP POST request"]
+    A["User enters 8 features <br/> in Streamlit"] --> B["Frontend sends <br/> HTTP POST request"]
     B --> C["FastAPI backend receives <br/> JSON data"]
-    C --> D["TensorFlow model processes input"]
-    D --> E["Prediction returned by API"]
-    E --> F["Streamlit displays the result"]
+    C --> D["TensorFlow model <br/> processes input"]
+    D --> E["Prediction returned <br/> by API"]
+    E --> F["Streamlit displays <br/> the result"]
 ````
 
 <details>
