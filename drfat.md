@@ -221,55 +221,489 @@ That is why the backend prepares the data before prediction. This step may inclu
 
 This step is very important because machine learning models are sensitive to input format.
 
+<details/>
 
-## 4. The frontend layer
 
-The frontend layer is the visible part of the project. It is the part that the user sees and interacts with.
 
-In this project, the file `frontend.py` is responsible for:
 
-* displaying the interface with Streamlit
-* allowing the user to enter 8 numeric values
-* sending the values to the backend
-* receiving the prediction result
-* displaying the result clearly on the screen
 
-### Why use Streamlit?
 
-Streamlit is a Python framework that makes it easy to build simple web interfaces for data science and machine learning projects.
 
-It is especially useful for beginners because:
 
-* it is easy to learn
-* it requires very little code
-* it works well with Python
-* it is ideal for demos and prototypes
 
-### What does the user do in the frontend?
 
-The user enters 8 numeric values. These values represent the input features used by the machine learning model.
+# 4 - Neural Network Explanation
 
-A **feature** is simply an input variable used by the model to make a prediction.
+<details>
+<summary>Neural Network Overview</summary>
 
-For example, in another type of project, features could represent:
+<br/>
 
-* age
-* salary
-* number of purchases
-* temperature
-* sensor measurements
+```mermaid
+flowchart LR
+    A["Input Layer<br/>8 features"] --> B["Hidden Layer 1<br/>16 neurons<br/>ReLU"]
+    B --> C["Hidden Layer 2<br/>8 neurons<br/>ReLU"]
+    C --> D["Output Layer<br/>1 neuron<br/>Sigmoid"]
+````
 
-In this project, the features are generic numeric values used to demonstrate the full prediction workflow.
+This section explains the structure of the neural network used in the project. The goal is to help beginners understand what the model looks like, how information moves through it, and why it is able to produce a prediction.
 
-### What happens after the user clicks the prediction button?
+At first, a neural network may look complicated, but in this project the idea is simple. The model receives **8 numeric input values**, transforms them step by step through hidden layers, and produces **one final output value** between **0 and 1**.
 
-Once the values are entered, the frontend sends them to the backend. It does not calculate the prediction itself. Its role is only to collect input and display output.
+This output is used for **binary classification**, which means the model must choose between **two possible classes**.
 
-This is important for beginners to understand:
+For example:
 
-* the frontend is not the model
-* the frontend is not the API
-* the frontend is the interface used to interact with the system
+* class `0`
+* class `1`
+
+The network does not simply guess randomly. During training, it learns patterns from the data. Later, during prediction, it uses what it has learned to estimate which class is more likely.
+
+---
+
+## 1. What is this neural network doing?
+
+This model is a **binary classification neural network**.
+
+That means its goal is to decide between two possible categories.
+
+It receives **8 numeric input values** and produces **one output value between 0 and 1**.
+
+In general:
+
+* if the output is close to **0**, the model tends to predict class **0**
+* if the output is close to **1**, the model tends to predict class **1**
+
+So the final output can be interpreted as a kind of confidence or probability for the positive class.
+
+For example:
+
+* `0.10` means the model is leaning strongly toward class `0`
+* `0.49` means the model is uncertain
+* `0.85` means the model is leaning strongly toward class `1`
+
+In many cases, we use a threshold such as `0.5`:
+
+* output < `0.5` → predict class `0`
+* output >= `0.5` → predict class `1`
+
+This is why the final layer uses the **sigmoid** activation function: it transforms the output into a value between `0` and `1`.
+
+---
+
+## 2. General idea of how a neural network works
+
+A neural network is a system made of connected layers.
+
+Each layer receives numbers, performs mathematical operations, and passes the result to the next layer.
+
+You can think of it as a chain of transformations:
+
+1. the input layer receives the original data
+2. the hidden layers learn useful patterns
+3. the output layer produces the final prediction
+
+The network learns by adjusting internal parameters called **weights** and **biases**.
+
+At the beginning of training, these values are random, so the model makes poor predictions.
+
+During training, the network compares its predictions with the correct answers and gradually adjusts itself to improve.
+
+This learning process is what allows the model to become useful.
+
+---
+
+## 3. Understanding the input layer
+
+The first part of the model is the **input layer**.
+
+The network expects an input vector of size **8**, because each example in this project contains **8 features**.
+
+A feature is simply an input value used by the model.
+
+Example of one input sample:
+
+```python
+[0.2, 0.8, 0.1, 0.7, 0.9, 0.3, 0.5, 0.6]
+```
+
+This means the model receives 8 numbers at the same time.
+
+### Important beginner idea
+
+The input layer does not make a decision by itself.
+
+Its role is simply to receive the data and pass it to the next layer.
+
+So when we say:
+
+```python
+input_shape=(8,)
+```
+
+it means:
+
+* each sample has 8 values
+* the model expects exactly 8 features for one prediction
+
+If the model expects 8 features and receives only 7, or receives 10, it will not work correctly.
+
+That is why the shape of the input is very important in machine learning.
+
+---
+
+## 4. The first hidden layer
+
+The first hidden layer is:
+
+```python
+Dense(16, activation='relu', input_shape=(8,))
+```
+
+This means:
+
+* the layer is fully connected
+* it contains **16 neurons**
+* it uses the **ReLU** activation function
+* it receives **8 input values**
+
+### What does “Dense” mean?
+
+A **Dense** layer means that each neuron in this layer receives information from all values coming from the previous layer.
+
+So here, each of the 16 neurons looks at the 8 input values and computes a result.
+
+### What does this layer do?
+
+This layer:
+
+* receives the 8 input values
+* multiplies them by weights
+* adds biases
+* applies the activation function
+* produces 16 output values
+
+So the 8 original values are transformed into 16 learned values.
+
+### Why 16 neurons?
+
+There is no magical rule saying it must be exactly 16. It is a design choice.
+
+Using 16 neurons allows the network to learn richer internal patterns than the original 8 raw features.
+
+In simple words, the layer creates a more informative representation of the input data.
+
+### What is ReLU?
+
+ReLU stands for **Rectified Linear Unit**.
+
+Its formula is simple:
+
+```python
+f(x) = max(0, x)
+```
+
+This means:
+
+* if the value is negative, ReLU returns `0`
+* if the value is positive, ReLU returns the value itself
+
+Examples:
+
+* `ReLU(-3)` → `0`
+* `ReLU(0)` → `0`
+* `ReLU(4.5)` → `4.5`
+
+### Why use ReLU?
+
+ReLU is one of the most common activation functions in hidden layers because:
+
+* it is simple
+* it is fast
+* it works well in many neural networks
+
+It helps the network learn non-linear patterns, which means patterns that are more complex than a simple straight-line relationship.
+
+This is very important because most real data is not perfectly linear.
+
+---
+
+## 5. The second hidden layer
+
+The second hidden layer is:
+
+```python
+Dense(8, activation='relu')
+```
+
+This means:
+
+* the layer receives the 16 outputs from the previous layer
+* it contains **8 neurons**
+* it also uses **ReLU**
+
+### What does this layer do?
+
+This layer takes the learned representation created by the first hidden layer and transforms it again.
+
+Its role is to refine the information before the final decision.
+
+So:
+
+* the first hidden layer extracts useful patterns
+* the second hidden layer refines these patterns further
+
+It produces 8 new values, which are then sent to the output layer.
+
+### Why reduce from 16 neurons to 8 neurons?
+
+This is another design choice.
+
+The first hidden layer expands the representation from 8 to 16 values, and the second layer compresses it to 8 learned features.
+
+This can help the network keep useful information while simplifying it before the final prediction.
+
+For a beginner project, this is a good architecture because it is:
+
+* small
+* easy to understand
+* powerful enough for a simple classification task
+
+---
+
+## 6. The output layer
+
+The output layer is:
+
+```python
+Dense(1, activation='sigmoid')
+```
+
+This means:
+
+* the layer has **1 neuron**
+* it uses the **sigmoid** activation function
+
+### Why only 1 neuron?
+
+Because this is a **binary classification** problem.
+
+We only want one final output representing the probability of class `1`.
+
+If the task had multiple classes, the output layer would be different.
+
+### What does sigmoid do?
+
+The sigmoid function transforms any number into a value between `0` and `1`.
+
+This is useful because the output can then be interpreted as a probability-like value.
+
+Examples:
+
+* a raw value may become `0.12`
+* another raw value may become `0.76`
+* another raw value may become `0.93`
+
+### Why is sigmoid useful here?
+
+Because we want the final result to be easy to interpret.
+
+With sigmoid:
+
+* values close to `0` suggest class `0`
+* values close to `1` suggest class `1`
+
+This makes the output layer ideal for binary classification.
+
+---
+
+## 7. How information moves through the network
+
+Let us now describe the complete flow of one input sample.
+
+Suppose the model receives:
+
+```python
+[0.2, 0.8, 0.1, 0.7, 0.9, 0.3, 0.5, 0.6]
+```
+
+### Step 1: input layer
+
+The model receives the 8 values.
+
+### Step 2: first hidden layer
+
+The first hidden layer transforms these 8 values into 16 new values using weights, biases, and ReLU.
+
+### Step 3: second hidden layer
+
+The second hidden layer takes those 16 values and transforms them into 8 new learned values.
+
+### Step 4: output layer
+
+The output layer takes those 8 values and produces a single number between 0 and 1.
+
+For example:
+
+```python
+0.82
+```
+
+This result means that the model considers class `1` more likely.
+
+If the threshold is `0.5`, then the final predicted class would be:
+
+```python
+1
+```
+
+---
+
+## 8. What are neurons actually doing?
+
+A beginner often sees the word **neuron** and imagines something mysterious.
+
+In practice, a neuron is just a small mathematical unit.
+
+A neuron usually does this:
+
+1. receives several input values
+2. multiplies each input by a weight
+3. adds everything together
+4. adds a bias
+5. applies an activation function
+
+So a neuron is not magic. It is a mathematical transformation.
+
+The power of neural networks comes from having many neurons working together across multiple layers.
+
+---
+
+## 9. What are weights and biases?
+
+These are two of the most important concepts in a neural network.
+
+### Weights
+
+Weights determine how important each input is.
+
+If a weight is large, that input has a stronger effect on the neuron.
+
+If a weight is small, that input has less influence.
+
+### Biases
+
+A bias is an additional value added to the neuron’s calculation.
+
+It gives the neuron more flexibility and helps it learn better patterns.
+
+### During training
+
+The model learns by adjusting these weights and biases.
+
+This is the core of machine learning.
+
+The network improves because training changes its internal parameters to reduce prediction errors.
+
+---
+
+## 10. Why do we need hidden layers?
+
+A beginner may ask: why not go directly from 8 inputs to 1 output?
+
+That is possible in very simple models, but hidden layers allow the network to learn more complex relationships.
+
+The hidden layers help the network:
+
+* combine features
+* detect patterns
+* build intermediate representations
+* improve prediction quality
+
+Without hidden layers, the model would be much more limited.
+
+The hidden layers are what allow the network to “learn” useful internal features automatically.
+
+---
+
+## 11. Why is this architecture good for a beginner project?
+
+This architecture is a good choice for beginners because it is simple but meaningful.
+
+### It is small
+
+The network is not too deep and not too large, so it is easier to understand.
+
+### It shows the main ideas
+
+It introduces important concepts such as:
+
+* input layer
+* hidden layers
+* neurons
+* ReLU
+* sigmoid
+* binary classification
+
+### It is realistic enough
+
+Even though the project is small, the architecture looks like a real neural network used for a classification task.
+
+This makes it a good learning example.
+
+---
+
+## 12. Beginner-friendly analogy
+
+You can think of the neural network as a sequence of decision steps.
+
+Imagine you are trying to decide whether an object belongs to class `0` or class `1`.
+
+* the **input layer** receives the raw information
+* the **first hidden layer** looks for simple patterns
+* the **second hidden layer** combines these patterns into more meaningful signals
+* the **output layer** makes the final decision
+
+So the network gradually transforms raw data into a prediction.
+
+This is why neural networks are often described as systems that learn representations step by step.
+
+---
+
+## 13. Final idea to remember
+
+The most important thing to remember is that this neural network takes **8 input features** and transforms them through two hidden layers to produce **one final output** for binary classification.
+
+Its architecture is:
+
+* **Input layer** → receives 8 features
+* **Hidden layer 1** → 16 neurons with ReLU
+* **Hidden layer 2** → 8 neurons with ReLU
+* **Output layer** → 1 neuron with sigmoid
+
+This means the model:
+
+1. receives the input data
+2. transforms it step by step
+3. learns internal patterns
+4. returns a value between 0 and 1
+5. uses this value to predict one of two classes
+
+This is a simple but very good example of how a neural network works in practice.
+
+</details>
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
