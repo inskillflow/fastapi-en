@@ -7,16 +7,24 @@
 | # | Section |
 |---|---|
 | 1 | [What is an API?](#section-1) |
+| 1a | &nbsp;&nbsp;&nbsp;↳ [The 6 REST constraints](#section-1) |
 | 2 | [Why use APIs?](#section-2) |
 | 3 | [HTTP Protocol and Methods](#section-3) |
+| 3a | &nbsp;&nbsp;&nbsp;↳ [What is a route / endpoint?](#section-3) |
+| 3b | &nbsp;&nbsp;&nbsp;↳ [Path param vs query param](#section-3) |
 | 4 | [HTTP Status Codes](#section-4) |
 | 5 | [Making API calls with `requests`](#section-5) |
-| 5a | &nbsp;&nbsp;&nbsp;↳ [Complete scripts to run in VS Code](#section-5) |
-| 5b | &nbsp;&nbsp;&nbsp;↳ [Test with Postman — public API](#section-5) |
+| 5a | &nbsp;&nbsp;&nbsp;↳ [Virtual environments — always use them](#section-5) |
+| 5b | &nbsp;&nbsp;&nbsp;↳ [Complete scripts to run in VS Code](#section-5) |
+| 5c | &nbsp;&nbsp;&nbsp;↳ [Test with Postman — public API](#section-5) |
 | 6 | [FastAPI — Building an API](#section-6) |
-| 6a | &nbsp;&nbsp;&nbsp;↳ [Complete `fastapi_demo.py` to copy-paste](#section-6) |
-| 6b | &nbsp;&nbsp;&nbsp;↳ [Test with Postman — local FastAPI server](#section-6) |
+| 6a | &nbsp;&nbsp;&nbsp;↳ [What is `@` — the decorator?](#section-6) |
+| 6b | &nbsp;&nbsp;&nbsp;↳ [Complete `fastapi_demo.py` to copy-paste](#section-6) |
+| 6c | &nbsp;&nbsp;&nbsp;↳ [Test with Postman — local FastAPI server](#section-6) |
 | 7 | [Flask — Building an API](#section-7) |
+| 7a | &nbsp;&nbsp;&nbsp;↳ [What is `@app.route()`?](#section-7) |
+| 7b | &nbsp;&nbsp;&nbsp;↳ [What is `jsonify()` and `request.get_json()`?](#section-7) |
+| 7c | &nbsp;&nbsp;&nbsp;↳ [Complete `flask_demo.py` to copy-paste](#section-7) |
 | 8 | [Django REST Framework — Overview](#section-8) |
 | 9 | [FastAPI vs Flask vs Django — Comparison](#section-9) |
 | 10 | [Authentication in APIs](#section-10) |
@@ -98,6 +106,62 @@ A well-designed API has several qualities:
 * **Predictable errors** — error responses follow a standard format
 * **Versioning** — changes are managed without breaking existing clients (e.g., `/api/v1/users`)
 * **Security** — authentication and authorization are properly implemented
+
+---
+
+### The 6 constraints of REST
+
+REST is not just a style — it is a set of 6 architectural constraints defined by Roy Fielding in his 2000 doctoral dissertation. An API is only truly RESTful if it respects all 6.
+
+```mermaid
+flowchart TD
+    REST["REST Architecture\n6 Constraints"] --> C1["1. Client-Server\nUI and data are separated"]
+    REST --> C2["2. Stateless\nNo session stored on server"]
+    REST --> C3["3. Cacheable\nResponses can be cached"]
+    REST --> C4["4. Uniform Interface\nConsistent URL and method patterns"]
+    REST --> C5["5. Layered System\nClient doesn't know about middleware"]
+    REST --> C6["6. Code on Demand\n(Optional) Server can send code"]
+```
+
+**1. Client-Server separation**
+
+The client (frontend) and the server (backend) are completely independent. The client does not know how the server stores data. The server does not know how the client displays data. They communicate only through the API. This separation allows each side to evolve independently.
+
+**2. Stateless**
+
+Each request from the client to the server must contain all the information needed to understand and process it. The server does not store any session information about the client between requests. This is why authentication tokens are sent with every request rather than stored in a server-side session.
+
+```mermaid
+sequenceDiagram
+    participant C as Client
+    participant S as Server
+
+    Note over S: Server remembers NOTHING between requests
+
+    C->>S: GET /profile\nAuthorization: Bearer token123
+    S-->>C: 200 OK — user data
+
+    C->>S: GET /orders\nAuthorization: Bearer token123
+    S-->>C: 200 OK — orders list
+
+    Note over C,S: Token is sent EVERY time — server is stateless
+```
+
+**3. Cacheable**
+
+Responses must declare whether they can be cached by the client or intermediaries. Caching reduces server load and improves performance. HTTP headers like `Cache-Control`, `ETag`, and `Expires` control caching behavior.
+
+**4. Uniform Interface**
+
+This is the most important constraint. It requires that all resources are identified by URLs, that they are manipulated through standard HTTP methods, and that responses use standard formats (JSON or XML). This uniformity is what makes REST APIs predictable across different systems.
+
+**5. Layered System**
+
+The client does not need to know whether it is talking directly to the server or through intermediaries such as a load balancer, a cache, or a security gateway. Each layer only knows about the layer directly next to it.
+
+**6. Code on Demand (optional)**
+
+Servers can optionally send executable code to the client (such as JavaScript). This is the only optional constraint.
 
 </details>
 
@@ -323,7 +387,88 @@ scheme     host         ver resource id sub  query params
 | `/posts` | Sub-resource (posts belonging to user 42) |
 | `?limit=10&page=2` | Query parameters (filters, pagination) |
 
-### Headers
+---
+
+### What is a route?
+
+A **route** (also called an **endpoint**) is a specific URL address that the server listens to, associated with a particular HTTP method. When a client sends a request that matches a route's method + URL, the server executes the function that is attached to that route.
+
+Think of routes like menu items in a restaurant. Each menu item (route) is a specific combination of what you want (the HTTP method) and what you are asking for (the URL path). The kitchen (server) prepares the correct dish (response) when it receives a matching order.
+
+```mermaid
+flowchart LR
+    subgraph ROUTES["Routes defined in the server"]
+        R1["GET  /students     → list_students()"]
+        R2["POST /students     → create_student()"]
+        R3["GET  /students/42  → get_student(42)"]
+        R4["DELETE /students/42 → delete_student(42)"]
+    end
+
+    A["Client request:\nGET /students/42"] --> B["Router\nmatches method + path"]
+    B --> R3
+    R3 --> C["Response:\n{id: 42, name: ...}"]
+```
+
+A route is defined by two things:
+1. **The HTTP method** — what action is requested (GET, POST, PUT, DELETE...)
+2. **The URL path** — which resource is targeted (`/students`, `/students/42`...)
+
+If the client sends `GET /students`, the router matches the first route and calls `list_students()`. If the client sends `GET /students/42`, the router matches the third route and calls `get_student(42)`. The method and the path must both match — sending `DELETE /students` is a different route than `GET /students`.
+
+In **Flask**, routes are declared like this:
+
+```python
+@app.route("/students", methods=["GET"])
+def list_students():
+    ...
+
+@app.route("/students/<int:student_id>", methods=["GET"])
+def get_student(student_id):
+    ...
+```
+
+In **FastAPI**, the method is part of the decorator name:
+
+```python
+@app.get("/students")
+def list_students():
+    ...
+
+@app.get("/students/{student_id}")
+def get_student(student_id: int):
+    ...
+```
+
+Both frameworks achieve the same result — they map a method + path combination to a Python function.
+
+---
+
+### What is a path parameter vs a query parameter?
+
+These are two different ways to pass data through a URL.
+
+**Path parameter** — embedded inside the URL path, identifies a specific resource:
+
+```text
+GET /students/42
+              ↑
+              This is a path parameter — identifies student with id 42
+```
+
+**Query parameter** — appended after `?`, used for filtering, sorting, pagination:
+
+```text
+GET /students?active=true&limit=10
+              ↑_____________________
+              These are query parameters — filter and limit results
+```
+
+| Type | Location | Used for | Example |
+|---|---|---|---|
+| Path parameter | Inside the path | Identifying a specific resource | `/students/42` |
+| Query parameter | After `?` in the URL | Filtering, sorting, pagination | `/students?active=true` |
+
+
 
 Headers carry metadata about the request or response. Common headers include:
 
@@ -348,7 +493,9 @@ Headers carry metadata about the request or response. Common headers include:
 
 <br/>
 
-Every HTTP response includes a **status code** — a 3-digit number that tells the client whether the request succeeded or failed, and why. Status codes are grouped into five categories based on their first digit.
+Every HTTP response includes a **status code** — a 3-digit number that tells the client whether the request succeeded or failed, and why. Status codes are the language that servers use to communicate the outcome of a request. A client that ignores status codes and only looks at the response body is missing critical information.
+
+Status codes are standardized by the IETF (Internet Engineering Task Force). This means a `404` means "not found" in every API on the internet, regardless of who built it or what language it uses.
 
 ```mermaid
 flowchart LR
@@ -358,6 +505,10 @@ flowchart LR
     A --> E["4xx\nClient error\nProblem with the request"]
     A --> F["5xx\nServer error\nProblem on the server"]
 ```
+
+The most important distinction is between **4xx** and **5xx** errors:
+* A **4xx** error means the client did something wrong — fix the request and try again
+* A **5xx** error means the server is broken — the client did nothing wrong, and retrying may work later
 
 ---
 
@@ -449,7 +600,87 @@ except requests.exceptions.Timeout:
 
 <br/>
 
-The `requests` library is the standard Python library for making HTTP requests. It provides a clean, human-friendly interface for all HTTP methods.
+### Working in a virtual environment — always
+
+Before installing any library, you should create a **virtual environment**. A virtual environment is an isolated Python installation that belongs only to your current project. It keeps your project's dependencies separate from other projects and from the global Python installation.
+
+**Why this matters:** If you install libraries globally, two projects that need different versions of the same library will conflict. Virtual environments solve this completely.
+
+```mermaid
+flowchart TD
+    subgraph GLOBAL["Without virtual environment — conflicts"]
+        G["Global Python\npip install requests==2.28\npip install requests==2.31\n❌ Only one version can exist"]
+    end
+
+    subgraph VENV["With virtual environments — isolated"]
+        V1["Project A\nvenv_a/\nrequests==2.28\nfastapi==0.95"]
+        V2["Project B\nvenv_b/\nrequests==2.31\nflask==3.0"]
+        V3["Project C\nvenv_c/\nrequests==2.30\ndjango==4.2"]
+    end
+```
+
+#### Step-by-step — create and use a virtual environment
+
+**On Windows (VS Code terminal):**
+
+```bash
+# 1 — Create the virtual environment (creates a folder named "venv")
+python -m venv venv
+
+# 2 — Activate it
+venv\Scripts\activate
+
+# 3 — Your prompt changes to show (venv) — you are now inside
+(venv) PS C:\my-project>
+
+# 4 — Install packages (only installed inside this venv)
+pip install requests fastapi uvicorn flask
+
+# 5 — Save the list of dependencies
+pip freeze > requirements.txt
+
+# 6 — When done, deactivate
+deactivate
+```
+
+**On macOS / Linux:**
+
+```bash
+python3 -m venv venv
+source venv/bin/activate
+pip install requests fastapi uvicorn flask
+pip freeze > requirements.txt
+deactivate
+```
+
+**In VS Code — select the interpreter:**
+1. Press `Ctrl+Shift+P`
+2. Type `Python: Select Interpreter`
+3. Choose the one that shows `venv` in its path
+4. VS Code will automatically activate the virtual environment in new terminals
+
+#### What is `requirements.txt`?
+
+When you run `pip freeze > requirements.txt`, it saves all installed packages with their exact versions:
+
+```text
+fastapi==0.115.0
+requests==2.31.0
+uvicorn==0.30.1
+pydantic==2.7.4
+```
+
+Anyone who clones your project can then recreate the exact same environment with:
+
+```bash
+python -m venv venv
+venv\Scripts\activate       # Windows
+pip install -r requirements.txt
+```
+
+This guarantees that the project runs identically on every machine.
+
+---
 
 ### Installation
 
@@ -852,6 +1083,55 @@ flowchart LR
     D --> E["Response\nJSON"]
     C -->|"Invalid data"| F["422 error\nautomatically"]
 ```
+
+---
+
+### What is the `@` symbol — the decorator
+
+When you write `@app.get("/students")` above a function in Python, the `@` symbol marks a **decorator**. A decorator is a special function that wraps another function to add behavior to it without modifying its code.
+
+In simple terms: a decorator takes your function and registers it with the framework, associating it with a specific HTTP method and URL path.
+
+```python
+# This is what the decorator syntax looks like
+@app.get("/students")
+def list_students():
+    return [{"id": 1, "name": "Alice"}]
+
+# It is EXACTLY equivalent to writing this without the decorator:
+def list_students():
+    return [{"id": 1, "name": "Alice"}]
+
+list_students = app.get("/students")(list_students)
+# app.get("/students") returns a decorator function
+# that decorator wraps list_students and registers it
+```
+
+The decorator syntax (`@`) is just a cleaner way to write this registration. When FastAPI sees `@app.get("/students")`, it:
+1. Takes the function `list_students` that follows it
+2. Registers it in its internal routing table as: "when someone sends `GET /students`, call this function"
+3. Returns the function unchanged so it can still be called normally in tests
+
+```mermaid
+flowchart LR
+    A["@app.get('/students')\ndef list_students():..."] --> B["FastAPI routing table"]
+    B --> R1["GET  /students  → list_students"]
+    B --> R2["POST /students  → create_student"]
+    B --> R3["GET  /students/{id}  → get_student"]
+
+    C["Incoming request\nGET /students"] --> B
+    B --> D["list_students() called\nResponse returned"]
+```
+
+**The different decorators and what they do:**
+
+| Decorator | HTTP Method | Typical use |
+|---|---|---|
+| `@app.get("/path")` | GET | Read / retrieve data |
+| `@app.post("/path")` | POST | Create new resource |
+| `@app.put("/path")` | PUT | Replace resource entirely |
+| `@app.patch("/path")` | PATCH | Update specific fields |
+| `@app.delete("/path")` | DELETE | Remove resource |
 
 ---
 
@@ -1375,6 +1655,117 @@ flowchart LR
 
 ---
 
+### What is `@app.route()` in Flask?
+
+In Flask, `@app.route("/path", methods=["GET", "POST"])` is a decorator (just like `@app.get()` in FastAPI) that registers a function as the handler for a specific URL path and list of HTTP methods.
+
+The key difference from FastAPI is that in Flask you specify all allowed methods in a single list:
+
+```python
+# Flask — method is declared inside the decorator
+@app.route("/students", methods=["GET"])
+def list_students():
+    ...
+
+@app.route("/students", methods=["POST"])
+def create_student():
+    ...
+
+# Or both methods on the same function:
+@app.route("/students", methods=["GET", "POST"])
+def students():
+    if request.method == "GET":
+        return get_all()
+    elif request.method == "POST":
+        return create_new()
+```
+
+In **FastAPI**, the method is part of the decorator name (`@app.get`, `@app.post`, etc.) so each method always has its own function. In **Flask**, the same decorator `@app.route()` handles everything, and you pass the allowed methods as a list.
+
+---
+
+### What is `jsonify()`?
+
+When a Flask function returns data, Python objects like dictionaries and lists cannot be sent directly over HTTP — HTTP only transfers text. `jsonify()` converts a Python dictionary or list into a proper **JSON string** and sets the `Content-Type: application/json` header automatically.
+
+```python
+from flask import Flask, jsonify
+
+app = Flask(__name__)
+
+@app.route("/example")
+def example():
+    data = {"name": "Alice", "grade": 90}
+
+    # ❌ Do NOT do this — returns a Python dict as a string, no proper headers
+    return str(data)
+
+    # ✅ Do this — returns valid JSON with correct Content-Type header
+    return jsonify(data)
+```
+
+The difference matters because clients (browsers, `requests`, Postman) expect:
+* the body to be valid JSON text (double quotes, not single quotes)
+* the `Content-Type: application/json` header so they know how to parse it
+
+`jsonify()` handles both automatically.
+
+```mermaid
+flowchart LR
+    A["Python dict\n{'name': 'Alice', 'grade': 90}"] --> B["jsonify()"]
+    B --> C["JSON string\n'{\"name\": \"Alice\", \"grade\": 90}'"]
+    B --> D["Header set:\nContent-Type: application/json"]
+    C --> E["HTTP Response\nsent to client"]
+    D --> E
+```
+
+---
+
+### What is `request.get_json()`?
+
+When a client sends a POST or PUT request with a JSON body, Flask does not parse it automatically. You must call `request.get_json()` to read and parse the JSON body into a Python dictionary.
+
+```python
+from flask import Flask, request, jsonify
+
+app = Flask(__name__)
+
+@app.route("/students", methods=["POST"])
+def create_student():
+    # request.get_json() reads the body and converts it to a Python dict
+    data = request.get_json()
+
+    # data is now a Python dictionary:
+    # {"name": "Alice", "grade": 90}
+
+    if data is None:
+        return jsonify({"error": "Body must be JSON"}), 400
+
+    name = data.get("name")   # safe access with .get()
+    grade = data.get("grade")
+
+    if not name or grade is None:
+        return jsonify({"error": "name and grade are required"}), 400
+
+    return jsonify({"message": "Created", "name": name, "grade": grade}), 201
+```
+
+`request.get_json()` returns `None` if:
+* the body is empty
+* the `Content-Type` header is not `application/json`
+* the body is not valid JSON
+
+This is why manual validation is needed in Flask — FastAPI handles this automatically via Pydantic.
+
+| Task | Flask | FastAPI |
+|---|---|---|
+| Parse JSON body | `request.get_json()` — manual | Pydantic model — automatic |
+| Return JSON | `jsonify(data)` — explicit | `return dict` — automatic |
+| Validate required fields | Manual `if` checks | Pydantic raises 422 automatically |
+| Set status code | `return jsonify(data), 201` | `status_code=201` in decorator |
+
+---
+
 ### Installation
 
 ```bash
@@ -1558,6 +1949,226 @@ my_flask_api/
 ├── requirements.txt
 └── README.md
 ```
+
+---
+
+## ✏️ Complete script — copy, paste, run in VS Code
+
+### Step 1 — Install dependencies
+
+```bash
+pip install flask
+```
+
+### Step 2 — Create `flask_demo.py`
+
+```python
+from flask import Flask, jsonify, request
+
+app = Flask(__name__)
+
+# ─────────────────────────────────────────────────────────────────
+# In-memory data store
+# ─────────────────────────────────────────────────────────────────
+products = {
+    1: {"id": 1, "name": "Laptop",  "price": 999.99, "in_stock": True},
+    2: {"id": 2, "name": "Mouse",   "price":  29.99, "in_stock": True},
+    3: {"id": 3, "name": "Monitor", "price": 349.99, "in_stock": False},
+}
+next_id = 4
+
+# ─────────────────────────────────────────────────────────────────
+# Root
+# ─────────────────────────────────────────────────────────────────
+@app.route("/")
+def root():
+    return jsonify({
+        "message": "Flask Product API",
+        "endpoints": ["/products", "/products/<id>"]
+    })
+
+# ─────────────────────────────────────────────────────────────────
+# GET /products — list all, with optional ?in_stock=true filter
+# ─────────────────────────────────────────────────────────────────
+@app.route("/products", methods=["GET"])
+def list_products():
+    in_stock_param = request.args.get("in_stock")  # query param
+    result = list(products.values())
+    if in_stock_param is not None:
+        in_stock = in_stock_param.lower() == "true"
+        result = [p for p in result if p["in_stock"] == in_stock]
+    return jsonify({"count": len(result), "products": result}), 200
+
+# ─────────────────────────────────────────────────────────────────
+# GET /products/<id> — single product
+# ─────────────────────────────────────────────────────────────────
+@app.route("/products/<int:product_id>", methods=["GET"])
+def get_product(product_id):
+    if product_id not in products:
+        return jsonify({"error": f"Product {product_id} not found"}), 404
+    return jsonify(products[product_id]), 200
+
+# ─────────────────────────────────────────────────────────────────
+# POST /products — create new product
+# ─────────────────────────────────────────────────────────────────
+@app.route("/products", methods=["POST"])
+def create_product():
+    global next_id
+    data = request.get_json()
+
+    if not data:
+        return jsonify({"error": "Request body must be JSON"}), 400
+
+    # Manual validation (Flask does not do this automatically)
+    missing = [f for f in ["name", "price"] if f not in data]
+    if missing:
+        return jsonify({"error": f"Missing required fields: {missing}"}), 400
+
+    new_product = {
+        "id": next_id,
+        "name": data["name"],
+        "price": float(data["price"]),
+        "in_stock": data.get("in_stock", True)
+    }
+    products[next_id] = new_product
+    next_id += 1
+    return jsonify(new_product), 201
+
+# ─────────────────────────────────────────────────────────────────
+# PUT /products/<id> — replace entirely
+# ─────────────────────────────────────────────────────────────────
+@app.route("/products/<int:product_id>", methods=["PUT"])
+def replace_product(product_id):
+    if product_id not in products:
+        return jsonify({"error": "Not found"}), 404
+    data = request.get_json()
+    if not data:
+        return jsonify({"error": "Request body must be JSON"}), 400
+    products[product_id] = {
+        "id": product_id,
+        "name": data["name"],
+        "price": float(data["price"]),
+        "in_stock": data.get("in_stock", True)
+    }
+    return jsonify(products[product_id]), 200
+
+# ─────────────────────────────────────────────────────────────────
+# PATCH /products/<id> — partial update
+# ─────────────────────────────────────────────────────────────────
+@app.route("/products/<int:product_id>", methods=["PATCH"])
+def update_product(product_id):
+    if product_id not in products:
+        return jsonify({"error": "Not found"}), 404
+    data = request.get_json() or {}
+    for key in ["name", "price", "in_stock"]:
+        if key in data:
+            products[product_id][key] = data[key]
+    return jsonify(products[product_id]), 200
+
+# ─────────────────────────────────────────────────────────────────
+# DELETE /products/<id>
+# ─────────────────────────────────────────────────────────────────
+@app.route("/products/<int:product_id>", methods=["DELETE"])
+def delete_product(product_id):
+    if product_id not in products:
+        return jsonify({"error": "Not found"}), 404
+    del products[product_id]
+    return "", 204
+
+# ─────────────────────────────────────────────────────────────────
+# Custom error handlers
+# ─────────────────────────────────────────────────────────────────
+@app.errorhandler(404)
+def not_found(e):
+    return jsonify({"error": "Route not found"}), 404
+
+@app.errorhandler(405)
+def method_not_allowed(e):
+    return jsonify({"error": "Method not allowed on this route"}), 405
+
+if __name__ == "__main__":
+    app.run(debug=True, port=5000)
+```
+
+### Step 3 — Start the server
+
+```bash
+python flask_demo.py
+```
+
+You should see:
+
+```text
+ * Running on http://127.0.0.1:5000
+ * Debug mode: on
+ * Restarting with stat
+```
+
+### Step 4 — Create `flask_client.py`
+
+```python
+import requests
+
+BASE_URL = "http://127.0.0.1:5000"
+
+print("=" * 55)
+print("GET / — root")
+r = requests.get(f"{BASE_URL}/")
+print(r.status_code, r.json())
+
+print("\nGET /products — all products")
+r = requests.get(f"{BASE_URL}/products")
+print(r.status_code, r.json())
+
+print("\nGET /products?in_stock=false — out of stock only")
+r = requests.get(f"{BASE_URL}/products", params={"in_stock": "false"})
+print(r.status_code, r.json())
+
+print("\nGET /products/1 — single product")
+r = requests.get(f"{BASE_URL}/products/1")
+print(r.status_code, r.json())
+
+print("\nGET /products/999 — not found")
+r = requests.get(f"{BASE_URL}/products/999")
+print(r.status_code, r.json())
+
+print("\nPOST /products — create")
+r = requests.post(f"{BASE_URL}/products",
+    json={"name": "Keyboard", "price": 79.99, "in_stock": True})
+print(r.status_code, r.json())
+new_id = r.json()["id"]
+
+print(f"\nPATCH /products/{new_id} — update price only")
+r = requests.patch(f"{BASE_URL}/products/{new_id}", json={"price": 69.99})
+print(r.status_code, r.json())
+
+print(f"\nDELETE /products/{new_id}")
+r = requests.delete(f"{BASE_URL}/products/{new_id}")
+print(f"Status: {r.status_code}")  # 204
+
+print("\nPOST with missing fields — validation error")
+r = requests.post(f"{BASE_URL}/products", json={"name": "Incomplete"})
+print(r.status_code, r.json())
+```
+
+---
+
+### 🧪 Test with Postman — Flask server
+
+Make sure `python flask_demo.py` is running, then test these requests:
+
+| # | Method | URL | JSON Body | Expected status |
+|---|---|---|---|---|
+| 1 | GET | `http://127.0.0.1:5000/` | — | 200 |
+| 2 | GET | `http://127.0.0.1:5000/products` | — | 200 |
+| 3 | GET | `http://127.0.0.1:5000/products?in_stock=false` | — | 200 |
+| 4 | GET | `http://127.0.0.1:5000/products/1` | — | 200 |
+| 5 | GET | `http://127.0.0.1:5000/products/999` | — | 404 |
+| 6 | POST | `http://127.0.0.1:5000/products` | `{"name":"Headphones","price":149.99,"in_stock":true}` | 201 |
+| 7 | PUT | `http://127.0.0.1:5000/products/4` | `{"name":"Headphones Pro","price":199.99,"in_stock":true}` | 200 |
+| 8 | PATCH | `http://127.0.0.1:5000/products/4` | `{"price":179.99}` | 200 |
+| 9 | DELETE | `http://127.0.0.1:5000/products/4` | — | 204 |
+| 10 | POST | `http://127.0.0.1:5000/products` | `{"name":"No price field"}` | 400 |
 
 ---
 
