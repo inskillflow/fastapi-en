@@ -32,6 +32,11 @@
 | 12 | [Complete Example — Book API](#section-12) |
 | 13 | [Commands Summary](#section-13) |
 | 14 | [Conclusion](#section-14) |
+| 15 | [Hands-on Project — Task Manager API (FastAPI + Streamlit)](#section-15) |
+| 15a | &nbsp;&nbsp;&nbsp;↳ [Clone the repository](#section-15) |
+| 15b | &nbsp;&nbsp;&nbsp;↳ [Virtual environment + install](#section-15) |
+| 15c | &nbsp;&nbsp;&nbsp;↳ [Run FastAPI + Streamlit](#section-15) |
+| 15d | &nbsp;&nbsp;&nbsp;↳ [Test with VS Code REST Client, Postman, curl](#section-15) |
 
 ---
 
@@ -3069,6 +3074,331 @@ flowchart LR
 * **API testing** — write automated tests using `pytest` and FastAPI's `TestClient`
 
 Every ML project, data service, or web application that needs to expose its functionality to the outside world eventually becomes an API. The patterns covered in this document are the foundation for all of that work.
+
+</details>
+
+<p align="right"><a href="#top">↑ Back to top</a></p>
+
+---
+
+<a id="section-15"></a>
+
+<details>
+<summary>15 - Hands-on Project — Task Manager API (FastAPI + Streamlit)</summary>
+
+<br/>
+
+This section walks through a complete, ready-to-run project that demonstrates all the concepts covered in this document: **GET, POST, PUT, PATCH, DELETE**, virtual environments, Pydantic validation, Swagger UI, VS Code REST Client, Postman, and a Streamlit frontend.
+
+The project is hosted on GitHub:
+
+```text
+https://github.com/inskillflow/demo_api_1_simple_fastapi_app.git
+```
+
+---
+
+### Project architecture
+
+```mermaid
+flowchart LR
+    subgraph CLIENT["Client"]
+        ST["Streamlit<br/>frontend.py<br/>localhost:8501"]
+        HTTP["test_api.http<br/>VS Code REST Client"]
+        PM["Postman / curl"]
+    end
+    subgraph SERVER["FastAPI Server"]
+        FA["main.py<br/>127.0.0.1:8000"]
+        DB["In-memory DB<br/>Python dict"]
+        DOCS["Swagger UI<br/>/docs"]
+    end
+    ST -->|"requests"| FA
+    HTTP -->|"HTTP"| FA
+    PM -->|"HTTP"| FA
+    FA --> DB
+    FA --> DOCS
+```
+
+---
+
+### Files in the project
+
+| File | Purpose |
+|---|---|
+| `main.py` | FastAPI server — all CRUD routes with Pydantic models |
+| `frontend.py` | Streamlit UI — calls the API visually |
+| `requirements.txt` | All dependencies with pinned versions |
+| `test_api.http` | VS Code REST Client — ready-to-send requests |
+| `curl_examples.sh` | curl and PowerShell equivalents |
+| `README.md` | Full setup guide with diagrams |
+
+---
+
+### Step 1 — Clone the repository
+
+```bash
+git clone https://github.com/inskillflow/demo_api_1_simple_fastapi_app.git
+cd demo_api_1_simple_fastapi_app
+```
+
+---
+
+### Step 2 — Create the virtual environment
+
+**Windows:**
+
+```powershell
+python -m venv venv
+venv\Scripts\activate
+```
+
+> If you get `running scripts is disabled`, run this once in PowerShell:
+> ```powershell
+> Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+> ```
+
+**macOS:**
+
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
+
+**Linux — Ubuntu 22.04:**
+
+```bash
+sudo apt install -y python3-venv
+python3 -m venv venv
+source venv/bin/activate
+```
+
+Verify the venv is active — you will see `(venv)` in your prompt:
+
+```bash
+where python     # Windows  → shows path inside venv\Scripts\
+which python     # macOS/Linux → shows path inside venv/bin/
+```
+
+---
+
+### Step 3 — Install dependencies
+
+```bash
+# Upgrade pip first
+python -m pip install --upgrade pip
+
+# Install all packages
+pip install -r requirements.txt
+```
+
+`requirements.txt` contains:
+
+```text
+fastapi==0.115.0
+uvicorn==0.30.1
+pydantic==2.7.4
+streamlit==1.35.0
+requests==2.31.0
+```
+
+Verify:
+
+```bash
+pip list
+```
+
+---
+
+### Step 4 — Run the FastAPI server
+
+```bash
+uvicorn main:app --reload
+```
+
+The server starts at `http://127.0.0.1:8000`
+
+| URL | What you see |
+|---|---|
+| `http://127.0.0.1:8000/` | Root — confirms the API is running |
+| `http://127.0.0.1:8000/tasks` | All tasks (JSON) |
+| `http://127.0.0.1:8000/docs` | Swagger UI — interactive documentation |
+| `http://127.0.0.1:8000/redoc` | ReDoc — clean read-only docs |
+
+---
+
+### Step 5 — Run the Streamlit frontend
+
+Open a **second terminal**, activate the venv again, then:
+
+```bash
+# Windows
+venv\Scripts\activate
+streamlit run frontend.py
+
+# macOS / Linux
+source venv/bin/activate
+streamlit run frontend.py
+```
+
+The interface opens at `http://localhost:8501`
+
+```mermaid
+flowchart LR
+    subgraph T1["Terminal 1 — FastAPI"]
+        A["uvicorn main:app --reload<br/>→ http://127.0.0.1:8000"]
+    end
+    subgraph T2["Terminal 2 — Streamlit"]
+        B["streamlit run frontend.py<br/>→ http://localhost:8501"]
+    end
+    T2 -->|"HTTP requests"| T1
+```
+
+---
+
+### Step 6 — Test the API
+
+#### Option A — Swagger UI (no setup needed)
+
+Go to `http://127.0.0.1:8000/docs` in your browser.
+Click any endpoint → **Try it out** → fill in values → **Execute**.
+
+#### Option B — VS Code REST Client
+
+1. Install the extension **REST Client** by Humao (`humao.rest-client`)
+2. Open `test_api.http`
+3. Click **Send Request** above any `###` block
+
+The file covers all methods and error cases:
+
+```http
+### GET — All tasks
+GET http://127.0.0.1:8000/tasks
+
+### POST — Create a task
+POST http://127.0.0.1:8000/tasks
+Content-Type: application/json
+
+{
+  "title": "Study Pydantic",
+  "priority": "high"
+}
+
+### PATCH — Mark as completed
+PATCH http://127.0.0.1:8000/tasks/1
+Content-Type: application/json
+
+{
+  "completed": true
+}
+
+### DELETE
+DELETE http://127.0.0.1:8000/tasks/4
+```
+
+#### Option C — Postman
+
+| Method | URL | Body |
+|---|---|---|
+| GET | `http://127.0.0.1:8000/tasks` | — |
+| GET | `http://127.0.0.1:8000/tasks?completed=false&priority=high` | — |
+| GET | `http://127.0.0.1:8000/tasks/1` | — |
+| POST | `http://127.0.0.1:8000/tasks` | `{"title": "...", "priority": "high"}` |
+| PUT | `http://127.0.0.1:8000/tasks/1` | all fields |
+| PATCH | `http://127.0.0.1:8000/tasks/1` | `{"completed": true}` |
+| DELETE | `http://127.0.0.1:8000/tasks/4` | — |
+
+#### Option D — curl
+
+```bash
+# GET all
+curl http://127.0.0.1:8000/tasks
+
+# GET with filters
+curl "http://127.0.0.1:8000/tasks?completed=false&priority=high"
+
+# GET one
+curl http://127.0.0.1:8000/tasks/1
+
+# POST create
+curl -X POST http://127.0.0.1:8000/tasks \
+     -H "Content-Type: application/json" \
+     -d '{"title": "New task", "priority": "high"}'
+
+# PUT replace
+curl -X PUT http://127.0.0.1:8000/tasks/1 \
+     -H "Content-Type: application/json" \
+     -d '{"title": "Updated", "description": "Full replace", "completed": true, "priority": "high"}'
+
+# PATCH partial update
+curl -X PATCH http://127.0.0.1:8000/tasks/1 \
+     -H "Content-Type: application/json" \
+     -d '{"completed": true}'
+
+# DELETE
+curl -X DELETE http://127.0.0.1:8000/tasks/4
+```
+
+**Windows PowerShell:**
+
+```powershell
+# GET all tasks
+Invoke-RestMethod -Uri "http://127.0.0.1:8000/tasks" -Method GET | ConvertTo-Json
+
+# POST create
+Invoke-RestMethod -Uri "http://127.0.0.1:8000/tasks" `
+  -Method POST `
+  -ContentType "application/json" `
+  -Body '{"title": "PowerShell task", "priority": "medium"}' | ConvertTo-Json
+
+# PATCH update
+Invoke-RestMethod -Uri "http://127.0.0.1:8000/tasks/1" `
+  -Method PATCH `
+  -ContentType "application/json" `
+  -Body '{"completed": true}' | ConvertTo-Json
+
+# DELETE
+Invoke-RestMethod -Uri "http://127.0.0.1:8000/tasks/4" -Method DELETE
+```
+
+---
+
+### Complete setup — all commands in one block
+
+**Windows:**
+
+```powershell
+git clone https://github.com/inskillflow/demo_api_1_simple_fastapi_app.git
+cd demo_api_1_simple_fastapi_app
+python -m venv venv
+venv\Scripts\activate
+python -m pip install --upgrade pip
+pip install -r requirements.txt
+
+# Terminal 1 — FastAPI
+uvicorn main:app --reload
+
+# Terminal 2 — open a new terminal, activate venv again
+venv\Scripts\activate
+streamlit run frontend.py
+```
+
+**macOS / Linux:**
+
+```bash
+git clone https://github.com/inskillflow/demo_api_1_simple_fastapi_app.git
+cd demo_api_1_simple_fastapi_app
+python3 -m venv venv
+source venv/bin/activate
+python -m pip install --upgrade pip
+pip install -r requirements.txt
+
+# Terminal 1 — FastAPI
+uvicorn main:app --reload
+
+# Terminal 2 — open a new terminal, activate venv again
+source venv/bin/activate
+streamlit run frontend.py
+```
 
 </details>
 
