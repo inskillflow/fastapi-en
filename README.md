@@ -56,7 +56,7 @@ flowchart TD
     FT2 --> FT2a["15a — Clone the repository"]
     FT2a --> FT2b["15b — Virtual environment + install dependencies"]
     FT2b --> FT2c["15c — Run FastAPI + Streamlit"]
-    FT2c --> FT2d["15d — Test with VS Code REST Client · Postman · curl"]
+    FT2c --> FT2d["15d — (Optional) Test with VS Code REST Client · Postman · curl"]
     FT2d --> FT3["06 — Method 1\nSwagger UI Testing Guide"]
     FT3 --> FT4["16 — Deep Dive\nUnderstanding main.py Line by Line"]
     FT4 --> FT5["17 — Evaluation 1\nBuild a Complete REST API"]
