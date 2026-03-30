@@ -1,45 +1,45 @@
 <a id="top"></a>
 
-# FastAPI — Calculatrice API avec Swagger UI
+# FastAPI — Calculator API with Swagger UI
 
 ## Table of Contents
 
 | #  | Section                                                                              |
 | -- | ------------------------------------------------------------------------------------ |
-| 1  | [Introduction à FastAPI et Swagger UI](#section-1)                                   |
-| 2  | [Environnement virtuel Python](#section-2)                                            |
-| 2a | &nbsp;&nbsp;&nbsp;↳ [Alternative Python 3.9](#section-2)                             |
-| 3  | [Installation de FastAPI et Uvicorn](#section-3)                                      |
-| 4  | [Création du fichier `main.py`](#section-4)                                           |
-| 4a | &nbsp;&nbsp;&nbsp;↳ [Endpoints : add, subtract, multiply, divide](#section-4)        |
-| 5  | [Lancement de l'application](#section-5)                                              |
-| 6  | [Interface Swagger UI](#section-6)                                                    |
-| 7  | [Test des endpoints dans Swagger](#section-7)                                         |
-| 8  | [Annexe — URLs de test rapide](#section-8)                                            |
-| 9  | [Conclusion](#section-9)                                                              |
+| 1  | [Introduction to FastAPI and Swagger UI](#section-1)                                 |
+| 2  | [Python Virtual Environment](#section-2)                                             |
+| 2a | &nbsp;&nbsp;&nbsp;↳ [Python 3.9 Alternative](#section-2)                            |
+| 3  | [Installing FastAPI and Uvicorn](#section-3)                                         |
+| 4  | [Creating the `main.py` file](#section-4)                                            |
+| 4a | &nbsp;&nbsp;&nbsp;↳ [Endpoints: add, subtract, multiply, divide](#section-4)        |
+| 5  | [Starting the application](#section-5)                                               |
+| 6  | [Swagger UI Interface](#section-6)                                                   |
+| 7  | [Testing endpoints in Swagger](#section-7)                                           |
+| 8  | [Appendix — Quick test URLs](#section-8)                                             |
+| 9  | [Conclusion](#section-9)                                                             |
 
 ---
 
 <a id="section-1"></a>
 
 <details>
-<summary>1 - Introduction à FastAPI et Swagger UI</summary>
+<summary>1 - Introduction to FastAPI and Swagger UI</summary>
 
 <br/>
 
-**FastAPI** est un framework Python moderne pour construire des APIs web rapidement, avec une validation automatique des données et une documentation interactive générée automatiquement.
+**FastAPI** is a modern Python framework for building web APIs quickly, with automatic data validation and automatically generated interactive documentation.
 
-**Swagger UI** est cette documentation interactive disponible à `/docs` : elle permet de tester tous les endpoints directement dans le navigateur, sans outil externe.
+**Swagger UI** is this interactive documentation available at `/docs`: it allows you to test all endpoints directly in the browser, without any external tool.
 
 ```mermaid
 flowchart LR
-    A["Client<br/>(navigateur, curl, Postman)"] -->|"HTTP GET /add?a=10&b=5"| B["FastAPI<br/>(uvicorn)"]
+    A["Client<br/>(browser, curl, Postman)"] -->|"HTTP GET /add?a=10&b=5"| B["FastAPI<br/>(uvicorn)"]
     B -->|"{'result': 15.0}"| A
     B --> C["Swagger UI<br/>http://127.0.0.1:8000/docs"]
     B --> D["ReDoc<br/>http://127.0.0.1:8000/redoc"]
 ```
 
-Dans ce tutoriel, on crée une **calculatrice API** avec les 4 opérations de base exposées comme endpoints HTTP.
+In this tutorial, we create a **calculator API** with the 4 basic operations exposed as HTTP endpoints.
 
 </details>
 
@@ -50,45 +50,45 @@ Dans ce tutoriel, on crée une **calculatrice API** avec les 4 opérations de ba
 <a id="section-2"></a>
 
 <details>
-<summary>2 - Environnement virtuel Python</summary>
+<summary>2 - Python Virtual Environment</summary>
 
 <br/>
 
-Il est recommandé d'isoler chaque projet Python dans son propre environnement virtuel pour éviter les conflits de dépendances.
+It is recommended to isolate each Python project in its own virtual environment to avoid dependency conflicts.
 
 ```bash
-cd mon_projet
-python -m venv monfastapi
-monfastapi\Scripts\activate
+cd my_project
+python -m venv myfastapi
+myfastapi\Scripts\activate
 python --version
 pip install fastapi uvicorn
 deactivate
 ```
 
-Ces commandes :
+These commands:
 
-1. Naviguent vers le dossier du projet.
-2. Créent l'environnement virtuel `monfastapi`.
-3. Activent l'environnement.
-4. Installent FastAPI et Uvicorn.
-5. Désactivent l'environnement.
+1. Navigate to the project folder.
+2. Create the `myfastapi` virtual environment.
+3. Activate the environment.
+4. Install FastAPI and Uvicorn.
+5. Deactivate the environment.
 
-Pour réactiver l'environnement plus tard :
+To reactivate the environment later:
 
 ```bash
-monfastapi\Scripts\activate
+myfastapi\Scripts\activate
 ```
 
 ---
 
-### Alternative Python 3.9
+### Python 3.9 Alternative
 
-Si plusieurs versions de Python sont installées sur la machine :
+If multiple Python versions are installed on the machine:
 
 ```bash
-cd mon_projet_2
-python3.9 -m venv monfastapi
-monfastapi\Scripts\activate
+cd my_project_2
+python3.9 -m venv myfastapi
+myfastapi\Scripts\activate
 python --version
 pip install fastapi uvicorn
 deactivate
@@ -103,18 +103,18 @@ deactivate
 <a id="section-3"></a>
 
 <details>
-<summary>3 - Installation de FastAPI et Uvicorn</summary>
+<summary>3 - Installing FastAPI and Uvicorn</summary>
 
 <br/>
 
-**FastAPI** est le framework web. **Uvicorn** est le serveur ASGI qui l'exécute.
+**FastAPI** is the web framework. **Uvicorn** is the ASGI server that runs it.
 
 ```bash
 pip install fastapi
 pip install "uvicorn[standard]"
 ```
 
-> La variante `uvicorn[standard]` installe les dépendances optionnelles (rechargement automatique, support WebSocket, etc.).
+> The `uvicorn[standard]` variant installs optional dependencies (auto-reload, WebSocket support, etc.).
 
 </details>
 
@@ -125,11 +125,11 @@ pip install "uvicorn[standard]"
 <a id="section-4"></a>
 
 <details>
-<summary>4 - Création du fichier main.py</summary>
+<summary>4 - Creating the main.py file</summary>
 
 <br/>
 
-Créer un fichier `main.py` dans le dossier du projet :
+Create a `main.py` file in the project folder:
 
 ```python
 from fastapi import FastAPI, HTTPException
@@ -161,15 +161,15 @@ def divide(a: float, b: float):
 
 ---
 
-### Explication des endpoints
+### Endpoint Explanation
 
-| Endpoint      | Méthode | Paramètres     | Description                                  |
+| Endpoint      | Method | Parameters     | Description                                  |
 | ------------- | ------- | -------------- | -------------------------------------------- |
-| `/`           | GET     | —              | Message d'accueil                             |
-| `/add`        | GET     | `a`, `b` float | Addition de deux nombres                      |
-| `/subtract`   | GET     | `a`, `b` float | Soustraction                                  |
-| `/multiply`   | GET     | `a`, `b` float | Multiplication                                |
-| `/divide`     | GET     | `a`, `b` float | Division — lève une erreur 400 si `b == 0`   |
+| `/`           | GET     | —              | Welcome message                              |
+| `/add`        | GET     | `a`, `b` float | Addition of two numbers                      |
+| `/subtract`   | GET     | `a`, `b` float | Subtraction                                  |
+| `/multiply`   | GET     | `a`, `b` float | Multiplication                               |
+| `/divide`     | GET     | `a`, `b` float | Division — raises 400 error if `b == 0`      |
 
 </details>
 
@@ -180,7 +180,7 @@ def divide(a: float, b: float):
 <a id="section-5"></a>
 
 <details>
-<summary>5 - Lancement de l'application</summary>
+<summary>5 - Starting the application</summary>
 
 <br/>
 
@@ -188,13 +188,13 @@ def divide(a: float, b: float):
 uvicorn main:app --reload
 ```
 
-L'option `--reload` redémarre automatiquement le serveur à chaque modification du code (utile en développement).
+The `--reload` option automatically restarts the server on every code change (useful during development).
 
-L'application est accessible à :
+The application is accessible at:
 
-- **API** : [http://127.0.0.1:8000](http://127.0.0.1:8000)
-- **Swagger UI** : [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
-- **ReDoc** : [http://127.0.0.1:8000/redoc](http://127.0.0.1:8000/redoc)
+- **API**: [http://127.0.0.1:8000](http://127.0.0.1:8000)
+- **Swagger UI**: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
+- **ReDoc**: [http://127.0.0.1:8000/redoc](http://127.0.0.1:8000/redoc)
 
 </details>
 
@@ -205,21 +205,21 @@ L'application est accessible à :
 <a id="section-6"></a>
 
 <details>
-<summary>6 - Interface Swagger UI</summary>
+<summary>6 - Swagger UI Interface</summary>
 
 <br/>
 
-Swagger UI est généré automatiquement par FastAPI à partir des types Python déclarés dans le code. Il est accessible à `/docs`.
+Swagger UI is automatically generated by FastAPI from the Python types declared in the code. It is accessible at `/docs`.
 
 ```mermaid
 flowchart TD
-    A["Ouvrir le navigateur"] --> B["http://127.0.0.1:8000/docs"]
-    B --> C["Liste des endpoints<br/>GET /, /add, /subtract, /multiply, /divide"]
-    C --> D["Cliquer sur un endpoint"]
+    A["Open the browser"] --> B["http://127.0.0.1:8000/docs"]
+    B --> C["List of endpoints<br/>GET /, /add, /subtract, /multiply, /divide"]
+    C --> D["Click on an endpoint"]
     D --> E["Try it out"]
-    E --> F["Saisir les paramètres a et b"]
+    E --> F["Enter parameters a and b"]
     F --> G["Execute"]
-    G --> H["Voir la réponse JSON"]
+    G --> H["See the JSON response"]
 ```
 
 </details>
@@ -231,23 +231,23 @@ flowchart TD
 <a id="section-7"></a>
 
 <details>
-<summary>7 - Test des endpoints dans Swagger</summary>
+<summary>7 - Testing endpoints in Swagger</summary>
 
 <br/>
 
-Pour tester chaque endpoint :
+To test each endpoint:
 
-1. Cliquer sur l'endpoint (ex. `/add`) dans Swagger UI.
-2. Cliquer sur **"Try it out"**.
-3. Entrer les valeurs des paramètres `a` et `b`.
-4. Cliquer sur **"Execute"** pour envoyer la requête.
-5. La réponse JSON s'affiche directement dans l'interface.
+1. Click on the endpoint (e.g. `/add`) in Swagger UI.
+2. Click **"Try it out"**.
+3. Enter values for parameters `a` and `b`.
+4. Click **"Execute"** to send the request.
+5. The JSON response is displayed directly in the interface.
 
 ---
 
-### Exemples de réponses
+### Response Examples
 
-| Endpoint    | Requête                        | Réponse              |
+| Endpoint    | Request                        | Response             |
 | ----------- | ------------------------------ | -------------------- |
 | `/`         | `GET /`                        | `{"message": "..."}` |
 | `/add`      | `GET /add?a=10&b=5`            | `{"result": 15.0}`   |
@@ -265,11 +265,11 @@ Pour tester chaque endpoint :
 <a id="section-8"></a>
 
 <details>
-<summary>8 - Annexe — URLs de test rapide</summary>
+<summary>8 - Appendix — Quick test URLs</summary>
 
 <br/>
 
-Ces URLs peuvent être copiées directement dans le navigateur ou dans un outil comme Postman :
+These URLs can be copied directly into the browser or into a tool like Postman:
 
 ```text
 http://127.0.0.1:8000/add?a=2&b=5
@@ -291,16 +291,16 @@ http://127.0.0.1:8000/divide?a=2&b=5
 
 <br/>
 
-Ce tutoriel a couvert la création d'une API calculatrice complète avec FastAPI :
+This tutorial covered the creation of a complete calculator API with FastAPI:
 
-- Création et activation d'un environnement virtuel Python
-- Installation de FastAPI et Uvicorn
-- Définition de 5 endpoints GET avec validation de types automatique
-- Utilisation de Swagger UI pour documenter et tester l'API
+- Creating and activating a Python virtual environment
+- Installing FastAPI and Uvicorn
+- Defining 5 GET endpoints with automatic type validation
+- Using Swagger UI to document and test the API
 
-Cette API peut facilement être étendue pour inclure d'autres opérations ou être connectée à un frontend Streamlit.
+This API can easily be extended to include other operations or connected to a Streamlit frontend.
 
-Pour aller plus loin, consulter la [documentation officielle FastAPI](https://fastapi.tiangolo.com/).
+To go further, consult the [official FastAPI documentation](https://fastapi.tiangolo.com/).
 
 </details>
 
