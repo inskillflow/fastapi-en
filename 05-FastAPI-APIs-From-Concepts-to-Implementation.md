@@ -3403,3 +3403,173 @@ streamlit run frontend.py
 </details>
 
 <p align="right"><a href="#top">↑ Back to top</a></p>
+
+---
+
+<a id="section-swagger-testing"></a>
+
+## How to Test Your API with Swagger UI — Step by Step for Absolute Beginners
+
+> Swagger UI is a web page that FastAPI generates automatically.  
+> It lets you test every endpoint of your API by clicking buttons — no code needed.
+
+---
+
+### Step 1 — Start your FastAPI server
+
+Open a terminal, activate your virtual environment, and run:
+
+```bash
+uvicorn main:app --reload
+```
+
+You will see something like this:
+
+```
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process
+```
+
+Your API is now running locally on your computer.
+
+---
+
+### Step 2 — Open Swagger UI in your browser
+
+Open your browser and go to:
+
+```
+http://127.0.0.1:8000/docs
+```
+
+You will see a page with all your endpoints listed, grouped by color:
+
+| Color | Method | What it does |
+|-------|--------|--------------|
+| 🟢 Green | **GET** | Read / retrieve data |
+| 🟡 Yellow | **POST** | Create new data |
+| 🟠 Orange | **PUT** | Update existing data |
+| 🔴 Red | **DELETE** | Delete data |
+
+---
+
+### Step 3 — Test a GET endpoint (read all tasks)
+
+**Goal:** retrieve the list of all tasks.
+
+1. Click on the green **GET** block — for example `GET /tasks`
+2. The block expands — click the **"Try it out"** button on the right
+3. Click the blue **"Execute"** button
+4. Scroll down — you will see:
+   - **Request URL** — the full URL that was called
+   - **Response body** — the data returned by the API (in JSON format)
+   - **Response code** — `200` means success
+
+**Example response:**
+```json
+[
+  { "id": 1, "title": "Buy groceries", "completed": false },
+  { "id": 2, "title": "Read a book", "completed": true }
+]
+```
+
+---
+
+### Step 4 — Test a GET endpoint with a parameter (read one task)
+
+**Goal:** retrieve a single task by its ID.
+
+1. Click on the green **GET** block — for example `GET /tasks/{task_id}`
+2. Click **"Try it out"**
+3. You will see a field called **task_id** — type a number, for example `1`
+4. Click **"Execute"**
+5. The response shows only the task with ID 1
+
+> If you type an ID that does not exist, the API returns a `404` error — that is normal.
+
+---
+
+### Step 5 — Test a POST endpoint (create a new task)
+
+**Goal:** send data to the API to create a new task.
+
+1. Click on the yellow **POST** block — for example `POST /tasks`
+2. Click **"Try it out"**
+3. You will see a large text box called **Request body**
+4. Replace the content with your own data, for example:
+
+```json
+{
+  "title": "Learn FastAPI",
+  "completed": false
+}
+```
+
+5. Click **"Execute"**
+6. The response shows the new task that was just created, with its new ID
+
+> **Status code `201`** means the item was created successfully.
+
+---
+
+### Step 6 — Test a PUT endpoint (update an existing task)
+
+**Goal:** modify an existing task.
+
+1. Click on the orange **PUT** block — for example `PUT /tasks/{task_id}`
+2. Click **"Try it out"**
+3. In the **task_id** field, type the ID of the task you want to update, for example `1`
+4. In the **Request body**, write the new values:
+
+```json
+{
+  "title": "Learn FastAPI — updated",
+  "completed": true
+}
+```
+
+5. Click **"Execute"**
+6. The response shows the updated task
+
+> **Status code `200`** means the update was successful.
+
+---
+
+### Step 7 — Test a DELETE endpoint (delete a task)
+
+**Goal:** remove a task from the list.
+
+1. Click on the red **DELETE** block — for example `DELETE /tasks/{task_id}`
+2. Click **"Try it out"**
+3. In the **task_id** field, type the ID of the task you want to delete, for example `1`
+4. Click **"Execute"**
+5. The response confirms the task was deleted
+
+> **Status code `200`** or **`204`** means the deletion was successful.  
+> If you try to delete the same ID again, you get a `404` — the task no longer exists.
+
+---
+
+### Summary — What each status code means
+
+| Code | Meaning | When you see it |
+|------|---------|-----------------|
+| `200` | OK — success | GET, PUT, DELETE worked |
+| `201` | Created | POST created a new item |
+| `204` | No Content | DELETE with no body returned |
+| `404` | Not Found | The ID you requested does not exist |
+| `422` | Validation Error | You sent wrong or missing data |
+| `500` | Server Error | A bug in the code |
+
+---
+
+### Quick recap — The 4 actions in Swagger UI
+
+```
+GET    → Try it out → Enter ID (optional) → Execute → Read the response
+POST   → Try it out → Fill in the Request Body → Execute → See the new item
+PUT    → Try it out → Enter ID + fill Request Body → Execute → See updated item
+DELETE → Try it out → Enter ID → Execute → Confirm deletion
+```
+
+<p align="right"><a href="#top">↑ Back to top</a></p>
