@@ -37,6 +37,11 @@
 | 15b | &nbsp;&nbsp;&nbsp;↳ [Virtual environment + install](#section-15) |
 | 15c | &nbsp;&nbsp;&nbsp;↳ [Run FastAPI + Streamlit](#section-15) |
 | 15d | &nbsp;&nbsp;&nbsp;↳ [Test with VS Code REST Client, Postman, curl](#section-15) |
+| 16 | [How to Test Your API with Swagger UI — Step by Step for Absolute Beginners](#section-swagger-testing) |
+| 16a | &nbsp;&nbsp;&nbsp;↳ [Start your FastAPI server](#section-swagger-testing) |
+| 16b | &nbsp;&nbsp;&nbsp;↳ [Open Swagger UI in your browser](#section-swagger-testing) |
+| 16c | &nbsp;&nbsp;&nbsp;↳ [Test GET / POST / PUT / DELETE](#section-swagger-testing) |
+| 16d | &nbsp;&nbsp;&nbsp;↳ [Status codes summary + Quick recap](#section-swagger-testing) |
 
 ---
 
@@ -3408,7 +3413,10 @@ streamlit run frontend.py
 
 <a id="section-swagger-testing"></a>
 
-## How to Test Your API with Swagger UI — Step by Step for Absolute Beginners
+<details>
+<summary><strong>16 — How to Test Your API with Swagger UI — Step by Step for Absolute Beginners</strong></summary>
+
+<br/>
 
 > Swagger UI is a web page that FastAPI generates automatically.  
 > It lets you test every endpoint of your API by clicking buttons — no code needed.
@@ -3571,5 +3579,7 @@ POST   → Try it out → Fill in the Request Body → Execute → See the new i
 PUT    → Try it out → Enter ID + fill Request Body → Execute → See updated item
 DELETE → Try it out → Enter ID → Execute → Confirm deletion
 ```
+
+</details>
 
 <p align="right"><a href="#top">↑ Back to top</a></p>
