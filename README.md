@@ -41,16 +41,17 @@ flowchart TD
     E --> F["16 — Deep Dive\nmain.py Line by Line"]
     F --> G["12, 14, 15 — Quizzes\n& Command Reference"]
     G --> H["17-18 — Evaluations\nBuild a Full REST API"]
-
-    click A "./00-What-is-FastAPI.md" _blank
-    click B "./05-FastAPI-APIs-From-Concepts-to-Implementation.md" _blank
-    click C "./01-FastAPI-Calculator-API-with-Swagger-UI.md" _blank
-    click D "./06-FastAPI-Method-1-Swagger-UI-REST-Client-Practical-Testing-Guide.md" _blank
-    click E "./11-FastAPI-Step-by-Step-CRUD-Lab-Contact-Manager-API.md" _blank
-    click F "./16-FastAPI-main-py-Explained-Line-by-Line.md" _blank
-    click G "./12-FastAPI-Quiz-APIs-Flask-Requests-and-ML.md" _blank
-    click H "./17-FastAPI-Evaluation-1-Build-a-Complete-REST-API.md" _blank
 ```
+
+> **Open the file for each step:**
+> - **00** → [What is FastAPI?](./00-What-is-FastAPI.md)
+> - **05** → [APIs — From Concepts to Implementation](./05-FastAPI-APIs-From-Concepts-to-Implementation.md)
+> - **01–04** → [01](./01-FastAPI-Calculator-API-with-Swagger-UI.md) · [02](./02-FastAPI-Calculator-Frontend-Streamlit-Backend-FastAPI.md) · [03](./03-FastAPI-TensorFlow-Streamlit-Classification-Model.md) · [04](./04-FastAPI-TensorFlow-Streamlit-Complete-Guide.md)
+> - **06–10** → [06](./06-FastAPI-Method-1-Swagger-UI-REST-Client-Practical-Testing-Guide.md) · [07](./07-FastAPI-Method-2-POSTMAN-REST-Client-Practical-Testing-Guide.md) · [08](./08-FastAPI-Method-3-VS-Code-REST-Client-Practical-Testing-Guide.md) · [09](./09-FastAPI-Method-4-cURL-Guide-Contact-Manager-API.md) · [10](./10-FastAPI-Method-5-Multiple-Testing-Methods-Guide-Contact-Manager-API.md)
+> - **11** → [Lab — Contact Manager API](./11-FastAPI-Step-by-Step-CRUD-Lab-Contact-Manager-API.md)
+> - **16** → [Understanding main.py — Line by Line](./16-FastAPI-main-py-Explained-Line-by-Line.md)
+> - **12, 14, 15** → [12](./12-FastAPI-Quiz-APIs-Flask-Requests-and-ML.md) · [14](./14-FastAPI-Practical-Quiz-Labs-Calculator-Streamlit-TensorFlow.md) · [15](./15-FastAPI-Calculator-Practical-Quiz-Labs-and-Command-Reference.md)
+> - **17–18** → [Evaluation 1](./17-FastAPI-Evaluation-1-Build-a-Complete-REST-API.md) · [Evaluation 2](./18-FastAPI-Evaluation-2-Build-a-Complete-REST-API.md)
 
 ---
 
@@ -70,15 +71,18 @@ flowchart TD
     FT3 --> FT4["16 — Deep Dive\nUnderstanding main.py Line by Line"]
     FT4 --> FT5["17 — Evaluation 1\nBuild a Complete REST API"]
     FT5 --> FT6["18 — Evaluation 2\nAdd a Streamlit Frontend to Your API"]
-
-    click FT1 "./05-FastAPI-APIs-From-Concepts-to-Implementation.md" _blank
-    click FT2 "./15-FastAPI-Calculator-Practical-Quiz-Labs-and-Command-Reference.md" _blank
-    click FT2d "./08-FastAPI-Method-3-VS-Code-REST-Client-Practical-Testing-Guide.md" _blank
-    click FT3 "./06-FastAPI-Method-1-Swagger-UI-REST-Client-Practical-Testing-Guide.md" _blank
-    click FT4 "./16-FastAPI-main-py-Explained-Line-by-Line.md" _blank
-    click FT5 "./17-FastAPI-Evaluation-1-Build-a-Complete-REST-API.md" _blank
-    click FT6 "./18-FastAPI-Evaluation-2-Build-a-Complete-REST-API.md" _blank
 ```
+
+> **Open the file for each step:**
+> - **05** → [APIs — From Concepts to Implementation](./05-FastAPI-APIs-From-Concepts-to-Implementation.md)
+> - **15** → [Hands-on Project — Task Manager API](./15-FastAPI-Calculator-Practical-Quiz-Labs-and-Command-Reference.md)
+> - **15d** → [VS Code REST Client](./08-FastAPI-Method-3-VS-Code-REST-Client-Practical-Testing-Guide.md) · [Postman](./07-FastAPI-Method-2-POSTMAN-REST-Client-Practical-Testing-Guide.md) · [cURL](./09-FastAPI-Method-4-cURL-Guide-Contact-Manager-API.md)
+> - **06** → [Method 1 — Swagger UI Testing Guide](./06-FastAPI-Method-1-Swagger-UI-REST-Client-Practical-Testing-Guide.md)
+> - **16** → [Understanding main.py — Line by Line](./16-FastAPI-main-py-Explained-Line-by-Line.md)
+> - **17** → [Evaluation 1 — Build a Complete REST API](./17-FastAPI-Evaluation-1-Build-a-Complete-REST-API.md)
+> - **18** → [Evaluation 2 — Add a Streamlit Frontend](./18-FastAPI-Evaluation-2-Build-a-Complete-REST-API.md)
+
+---
 
 ## Tech Stack
 
