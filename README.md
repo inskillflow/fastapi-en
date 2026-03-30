@@ -8,7 +8,7 @@
 
 | # | File | Description |
 |---|------|-------------|
-| 00 | [What is FastAPI?](./00-What-is-FastAPI.md) | Introduction à FastAPI : explique ce qu'est le framework, pourquoi l'utiliser dans un pipeline ML/IA, et ses avantages clés (Swagger UI, validation, performance). |
+| 00 | [What is FastAPI?](./00-What-is-FastAPI.md) | Introduces FastAPI, explains what the framework is, why it is used in ML/AI pipelines, and highlights its key advantages such as Swagger UI, automatic validation, and high performance. |
 | 01 | [FastAPI — Calculator API with Swagger UI](./01-FastAPI-Calculator-API-with-Swagger-UI.md) | Builds a simple calculator REST API with FastAPI and tests it interactively via the Swagger UI interface. |
 | 02 | [FastAPI — Calculator: Streamlit Frontend + FastAPI Backend](./02-FastAPI-Calculator-Frontend-Streamlit-Backend-FastAPI.md) | Connects a Streamlit web frontend to a FastAPI backend to create a full-stack calculator application. |
 | 03 | [FastAPI — TensorFlow + Streamlit: Classification Model](./03-FastAPI-TensorFlow-Streamlit-Classification-Model.md) | Exposes a TensorFlow image classification model as a FastAPI endpoint consumed by a Streamlit interface. |
@@ -32,8 +32,35 @@
 
 ## Learning Path
 
+```mermaid
+flowchart TD
+    A["00 — Intro\nWhat is FastAPI?"] --> B["05 — Concepts\nAPIs Overview"]
+    B --> C["01-04 — Labs\nCalculator & TensorFlow"]
+    C --> D["06-10 — Testing Methods\nSwagger / Postman / cURL / VS Code / All"]
+    D --> E["11 — CRUD Lab\nContact Manager API"]
+    E --> F["16 — Deep Dive\nmain.py Line by Line"]
+    F --> G["12, 14, 15 — Quizzes\n& Command Reference"]
+    G --> H["17-18 — Evaluations\nBuild a Full REST API"]
 ```
-Intro (00) → Concepts (05) → Labs (01-04) → Testing Methods (06-10) → CRUD Lab (11) → Line-by-line (16) → Quizzes (12,14,15) → Evaluations (17,18)
+
+---
+
+## ⚡ Fast Track — Already know the basics?
+
+> **Skip straight to 05**, then follow this accelerated path:
+
+```mermaid
+flowchart TD
+    FT1["05 — APIs\nFrom Concepts to Implementation"]
+    FT1 --> FT2["15 — Hands-on Project\nTask Manager API · FastAPI + Streamlit"]
+    FT2 --> FT2a["15a — Clone the repository"]
+    FT2a --> FT2b["15b — Virtual environment + install dependencies"]
+    FT2b --> FT2c["15c — Run FastAPI + Streamlit"]
+    FT2c --> FT2d["15d — Test with VS Code REST Client · Postman · curl"]
+    FT2d --> FT3["06 — Method 1\nSwagger UI Testing Guide"]
+    FT3 --> FT4["16 — Deep Dive\nUnderstanding main.py Line by Line"]
+    FT4 --> FT5["17 — Evaluation 1\nBuild a Complete REST API"]
+    FT5 --> FT6["18 — Evaluation 2\nAdd a Streamlit Frontend to Your API"]
 ```
 
 ## Tech Stack
