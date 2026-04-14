@@ -2,6 +2,16 @@
 
 # Understanding `frontend.py` — Every Line Explained
 
+## Task Manager UI — Streamlit Deep Dive, Clear and Practical
+
+> Every concept is explained clearly from the ground up.
+> No prior experience with Streamlit or `requests` is assumed, but the explanations stay technically serious.
+> Each section can be read independently.
+> This explanation is based on the provided `frontend.py` file. :contentReference[oaicite:0]{index=0}
+
+---
+
+
 :::tip
 This guide explains the Streamlit frontend used in this project:
 
@@ -16,15 +26,6 @@ Reference links:
 
 This document focuses on explaining the frontend file step by step, while the backend logic is implemented in `main.py`.
 :::
-
-## Task Manager UI — Streamlit Deep Dive, Clear and Practical
-
-> Every concept is explained clearly from the ground up.
-> No prior experience with Streamlit or `requests` is assumed, but the explanations stay technically serious.
-> Each section can be read independently.
-> This explanation is based on the provided `frontend.py` file. :contentReference[oaicite:0]{index=0}
-
----
 
 ## Table of Contents
 
