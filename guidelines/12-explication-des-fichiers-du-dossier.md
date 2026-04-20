@@ -22,6 +22,10 @@ Ce dossier contient plusieurs fichiers Markdown qui servent soit à :
 | `10-guide-py-vs-python-vs-python3-ubuntu24-windows.md` | Guide théorique | Explique la différence entre `py`, `python` et `python3` selon Windows et Ubuntu | `py`, `python`, `python3` | Toute personne confuse entre les différentes commandes |
 | `11-comparaison-ubuntu22-ubuntu24-python-venv.md` | Comparaison système | Compare Ubuntu 22.04 et Ubuntu 24.04 pour Python, `venv`, `python3-full`, `python3.10-venv`, `python3.12-venv` | `python3` | Utilisateurs Linux voulant comprendre les différences entre versions Ubuntu |
 
+
+
+<img width="1536" height="1024" alt="ChatGPT Image 20 avr  2026, 17_07_03" src="https://github.com/user-attachments/assets/09989067-758d-4821-879a-9eec1b36b818" />
+
 ---
 
 ## Détail par fichier
