@@ -40,11 +40,21 @@ pip install -r requirements.txt
 pip list
 ```
 
+> [!WARNING]
+> **Run the following commands only if you really want to give the user `eleve` sudo privileges:**
+>
+> ```bash
+> sudo usermod -aG sudo eleve
+> su - eleve
+> groups
+> sudo whoami
+> ```
+
 > [!CAUTION]
 > **If `python3 -m venv myapp1` does not work, reinstall the full Python package:**
 >
 > ```bash
-> <=============== sudo apt update
+> sudo apt update
 > sudo apt install -y python3-full
 > ```
 
