@@ -14,7 +14,7 @@
 ---
 
 > [!IMPORTANT]
-> **Approche recommandée pour les étudiants**
+> **Approche recommandée**
 >
 > ```bash
 > sudo apt update
